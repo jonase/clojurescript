@@ -590,7 +590,7 @@
                        (if (and ~(first sig) (. ~(first sig) ~(symbol (core/str "-" slot)))) ;; Property access needed here.
                          (. ~(first sig) ~slot ~@sig)
                          ((or
-                           (aget ~(fqn fname) (goog.typeOf ~(first sig)))
+                           (aget ~(fqn fname) (goog/typeOf ~(first sig)))
                            (aget ~(fqn fname) "_")
                            (throw (missing-protocol
                                     ~(core/str psym "." fname) ~(first sig))))
