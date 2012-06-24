@@ -46,7 +46,7 @@
   "Internal - do not use!"
   [p x]
   (cond
-   (aget p (goog.typeOf x)) true
+   (aget p (goog/typeOf x)) true
    (aget p "_") true
    :else false))
 (set! *unchecked-if* false)
@@ -394,7 +394,7 @@
 
 (extend-type default
   IHash
-  (-hash [o] (goog.getUid o)))
+  (-hash [o] (goog/getUid o)))
 
 ;;this is primitive because & emits call to array-seq
 (defn inc
@@ -837,7 +837,7 @@ reduces them without incurring seq initialization"
 (def string-hash-cache-count 0)
 
 (defn add-to-string-hash-cache [k]
-  (let [h (goog.string/hashCode k)]
+  (let [h (gstring/hashCode k)]
     (aset string-hash-cache k h)
     (set! string-hash-cache-count (inc string-hash-cache-count))
     h))
@@ -920,7 +920,7 @@ reduces them without incurring seq initialization"
 
 (defn js-keys [obj]
   (let [keys (array)]
-    (goog.object/forEach obj (fn [val key obj] (.push keys key)))
+    (gobject/forEach obj (fn [val key obj] (.push keys key)))
     keys))
 
 (defn js-delete [obj key]
@@ -1272,8 +1272,8 @@ reduces them without incurring seq initialization"
 
 (defn- fix [q]
   (if (>= q 0)
-    (Math/floor q)
-    (Math/ceil q)))
+    (.floor js/Math q)
+    (.ceil js/Math q)))
 
 (defn int
   "Coerce to int by stripping decimal places."
@@ -1304,7 +1304,7 @@ reduces them without incurring seq initialization"
 
 (defn rand
   "Returns a random floating point number between 0 (inclusive) and n (default 1) (exclusive)."
-  ([]  (Math/random))
+  ([]  (.random js/Math))
   ([n] (* n (rand))))
 
 (defn rand-int
@@ -1411,11 +1411,11 @@ reduces them without incurring seq initialization"
   ([] "")
   ([x] (cond
         (nil? x) ""
-        :else (. x (toString))))
+        :else (.toString x)))
   ([x & ys]
      ((fn [sb more]
         (if more
-          (recur (. sb  (append (str* (first more)))) (next more))
+          (recur (.append sb (str* (first more))) (next more))
           (str* sb)))
       (gstring/StringBuffer. (str* x)) ys)))
 
@@ -1425,14 +1425,14 @@ reduces them without incurring seq initialization"
   one arg, returns the concatenation of the str values of the args."
   ([] "")
   ([x] (cond
-        (symbol? x) (. x (substring 2 (.-length x)))
-        (keyword? x) (str* ":" (. x (substring 2 (.-length x))))
+        (symbol? x) (.substring x 2 (.-length x))
+        (keyword? x) (str* ":" (.substring x 2 (.-length x)))
         (nil? x) ""
-        :else (. x (toString))))
+        :else (.toString x)))
   ([x & ys]
      ((fn [sb more]
         (if more
-          (recur (. sb  (append (str (first more)))) (next more))
+          (recur (.append sb (str (first more))) (next more))
           (str* sb)))
       (gstring/StringBuffer. (str x)) ys)))
 
@@ -1456,8 +1456,6 @@ reduces them without incurring seq initialization"
                 (symbol? name) (str* "\uFDD0" "'" (subs name 2))
                 :else (str* "\uFDD0" "'" name)))
   ([ns name] (keyword (str* ns "/" name))))
-
-
 
 (defn- equiv-sequential
   "Assumes x is sequential. Returns true if x equals y, otherwise
@@ -1682,7 +1680,7 @@ reduces them without incurring seq initialization"
 
 (extend-type string
   IHash
-  (-hash [o] (goog.string/hashCode o))
+  (-hash [o] (gstring/hashCode o))
 
   ISeqable
   (-seq [string] (prim-seq string 0))
@@ -2520,8 +2518,6 @@ reduces them without incurring seq initialization"
 (defn interpose
   "Returns a lazy seq of the elements of coll separated by sep"
   [sep coll] (drop 1 (interleave (repeat sep) coll)))
-
-
 
 (defn- flatten1
   "Take a collection of collections, and return a lazy seq
@@ -3683,7 +3679,7 @@ reduces them without incurring seq initialization"
           bucket (aget hashobj h)]
       (if bucket
         (let [new-bucket (aclone bucket)
-              new-hashobj (goog.object/clone hashobj)]
+              new-hashobj (gobject/clone hashobj)]
           (aset new-hashobj h new-bucket)
           (if-let [i (scan-array 2 k new-bucket)]
             (do                         ; found key, replace
@@ -3692,7 +3688,7 @@ reduces them without incurring seq initialization"
             (do                         ; did not find key, append
               (.push new-bucket k v)
               (HashMap. meta (inc count) new-hashobj nil))))
-        (let [new-hashobj (goog.object/clone hashobj)] ; did not find bucket
+        (let [new-hashobj (gobject/clone hashobj)] ; did not find bucket
           (aset new-hashobj h (array k v))
           (HashMap. meta (inc count) new-hashobj nil)))))
   (-contains-key? [coll k]
@@ -3709,7 +3705,7 @@ reduces them without incurring seq initialization"
           i (when bucket (scan-array 2 k bucket))]
       (if (not i)
         coll ; key not found, return coll unchanged
-        (let [new-hashobj (goog.object/clone hashobj)]
+        (let [new-hashobj (gobject/clone hashobj)]
           (if (> 3 (.-length bucket))
             (js-delete new-hashobj h)
             (let [new-bucket (aclone bucket)]
@@ -6240,7 +6236,7 @@ reduces them without incurring seq initialization"
                   (str nspc "/"))
                 (name obj)))
      :else (list (if (:readably opts)
-                   (goog.string.quote obj)
+                   (gstring/quote obj)
                    obj))))
 
   function
@@ -6382,7 +6378,7 @@ reduces them without incurring seq initialization"
     (set! (.-watches this) (dissoc watches key)))
 
   IHash
-  (-hash [this] (goog.getUid this)))
+  (-hash [this] (goog/getUid this)))
 
 (defn atom
   "Creates and returns an Atom with an initial value of x and zero or
@@ -6565,7 +6561,7 @@ reduces them without incurring seq initialization"
             (cond
              (seq? x) (doall (map thisfn x))
              (coll? x) (into (empty x) (map thisfn x))
-             (goog.isArray x) (vec (map thisfn x))
+             (goog/isArray x) (vec (map thisfn x))
              (identical? (type x) js/Object) (into {} (for [k (js-keys x)]
                                                         [(keyfn k)
                                                          (thisfn (aget x k))]))
@@ -6855,7 +6851,7 @@ reduces them without incurring seq initialization"
   (-dispatch [mf args] (do-dispatch mf dispatch-fn args))
 
   IHash
-  (-hash [this] (goog.getUid this)))
+  (-hash [this] (goog/getUid this)))
 
 (set! cljs.core.MultiFn.prototype.call
       (fn [_ & args]
@@ -6913,5 +6909,5 @@ reduces them without incurring seq initialization"
 
   IHash
   (-hash [this]
-    (goog.string/hashCode (pr-str this))))
+    (gstring/hashCode (pr-str this))))
 
