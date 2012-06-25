@@ -117,21 +117,21 @@
              full-ns (resolve-ns-alias env ns)]
          (confirm-var-exists env full-ns (symbol (name sym)))
          (merge (get-in @namespaces [full-ns :defs (symbol (name sym))])
-           {:name (symbol (str full-ns) (str (name sym)))
-            :ns full-ns}))
+                {:name (symbol (str full-ns) (str (name sym)))
+                 :ns full-ns}))
 
-       (.contains s ".")
-       (let [idx (.indexOf s ".")
-             prefix (symbol (subs s 0 idx))
-             suffix (subs s (inc idx))
+       (.contains s ".")                     
+       (let [idx (.lastIndexOf s ".")        
+             prefix (symbol (subs s 0 idx))  
+             suffix (subs s (inc idx))       
              lb (-> env :locals prefix)]
          (if lb
            {:name (symbol (str (:name lb) suffix))}
            (do
              (confirm-var-exists env prefix (symbol suffix))
              (merge (get-in @namespaces [prefix :defs (symbol suffix)])
-              {:name (if (= "" prefix) (symbol suffix) (symbol (str prefix) suffix))
-               :ns prefix}))))
+                    {:name (if (= "" prefix) (symbol suffix) (symbol (str prefix) suffix))
+                     :ns prefix}))))
 
        (get-in @namespaces [(-> env :ns :name) :uses sym])
        (let [full-ns (get-in @namespaces [(-> env :ns :name) :uses sym])]
@@ -146,8 +146,8 @@
                        (-> env :ns :name))]
          (confirm-var-exists env full-ns sym)
          (merge (get-in @namespaces [full-ns :defs sym])
-           {:name (symbol (str full-ns) (str sym))
-            :ns full-ns}))))))
+                {:name (symbol (str full-ns) (str sym))
+                 :ns full-ns}))))))
 
 (defn resolve-var [env sym]
   (if (= (namespace sym) "js")
@@ -163,7 +163,7 @@
          {:name (symbol (str (resolve-ns-alias env ns)) (name sym))})
 
        (.contains s ".")
-       (let [idx (.indexOf s ".")
+       (let [idx (.lastIndexOf s ".")
              prefix (symbol (subs s 0 idx))
              suffix (subs s idx)
              lb (-> env :locals prefix)]

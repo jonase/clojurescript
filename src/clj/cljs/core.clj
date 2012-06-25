@@ -582,7 +582,8 @@
   (let [p (:name (cljs.analyzer/resolve-var (dissoc &env :locals) psym))
         psym (vary-meta psym assoc :protocol-symbol true)
         ns-name (-> &env :ns :name)
-        fqn (fn [n] (symbol (core/str ns-name "." n)))
+        ;; No need to "resolve" here
+        ;;fqn (fn [n] (symbol (core/str ns-name "." n)))
         prefix (protocol-prefix p)
         methods (if (core/string? (first doc+methods)) (next doc+methods) doc+methods)
         expand-sig (fn [fname slot sig]
@@ -590,8 +591,8 @@
                        (if (and ~(first sig) (. ~(first sig) ~(symbol (core/str "-" slot)))) ;; Property access needed here.
                          (. ~(first sig) ~slot ~@sig)
                          ((or
-                           (aget ~(fqn fname) (goog/typeOf ~(first sig)))
-                           (aget ~(fqn fname) "_")
+                           (aget ~fname (goog/typeOf ~(first sig)))
+                           (aget ~fname "_")
                            (throw (missing-protocol
                                     ~(core/str psym "." fname) ~(first sig))))
                           ~@sig))))
