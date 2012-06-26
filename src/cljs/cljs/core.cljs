@@ -62,7 +62,7 @@
   *main-cli-fn* nil)
 
 (defn missing-protocol [proto obj]
-  (js/Error
+  (js/Error.
    (.join (array "No protocol method " proto
                  " defined for type " (goog/typeOf obj) ": " obj) "")))
 
