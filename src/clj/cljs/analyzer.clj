@@ -91,7 +91,7 @@
       (when-not (or ((conj '#{cljs.core js goog} crnt-ns) prefix)
                     (some #{prefix} (-> env :ns :requires vals)))
         (warning env
-          (str "WARNING: Use of undeclared Var " prefix "/" suffix)))
+          (str "WARNING: Use of undeclared ns " prefix " with Var " prefix "/" suffix)))
       (when (= prefix crnt-ns)
         (when-not (-> @namespaces crnt-ns :defs suffix)
           (warning env
