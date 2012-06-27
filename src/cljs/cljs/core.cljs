@@ -3498,6 +3498,7 @@ reduces them without incurring seq initialization"
      (> a b) 1
      :else 0)))
 
+(declare PersistentHashMap)
 (defn- obj-map->hash-map [m k v]
   (let [ks  (.-keys m)
         len (.-length ks)
@@ -6602,11 +6603,11 @@ reduces them without incurring seq initialization"
   "Returns a random floating point number between 0 (inclusive) and
   n (default 1) (exclusive)."
   ([] (rand 1))
-  ([n] (* (Math/random) n)))
+  ([n] (* (.random js/Math) n)))
 
 (defn rand-int
   "Returns a random integer between 0 (inclusive) and n (exclusive)."
-  [n] (Math/floor (* (Math/random) n)))
+  [n] (.floor js/Math (* (.random js/Math) n)))
 
 (defn rand-nth
   "Return a random element of the (sequential) collection. Will have

@@ -88,6 +88,10 @@
 (defn confirm-var-exists [env prefix suffix]
   (when *cljs-warn-on-undeclared*
     (let [crnt-ns (-> env :ns :name)]
+      (when-not (or ((conj '#{cljs.core js goog} crnt-ns) prefix)
+                    (some #{prefix} (-> env :ns :requires vals)))
+        (warning env
+          (str "WARNING: Use of undeclared Var " prefix "/" suffix)))
       (when (= prefix crnt-ns)
         (when-not (-> @namespaces crnt-ns :defs suffix)
           (warning env
