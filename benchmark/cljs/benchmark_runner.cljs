@@ -52,6 +52,13 @@
 (simple-benchmark [coll (seq [1 2 3])] (next coll) 1000000)
 (println)
 
+(println ";;; large vector ops")
+(simple-benchmark [] (reduce conj [] (range 40000)) 10)
+(simple-benchmark [coll (reduce conj [] (range (+ 32768 32)))] (conj coll :foo) 100000)
+(simple-benchmark [coll (reduce conj [] (range 40000))] (assoc coll 123 :foo) 100000)
+(simple-benchmark [coll (reduce conj [] (range (+ 32768 33)))] (pop coll) 100000)
+(println)
+
 (println ";;; transients")
 (print "transient vector, conj! 1000000 items")
 (time
@@ -65,6 +72,10 @@
 (simple-benchmark [coll (take 100000 (iterate inc 0))] (reduce + 0 coll) 1)
 (simple-benchmark [coll (range 1000000)] (reduce + 0 coll) 1)
 (simple-benchmark [coll (into [] (range 1000000))] (reduce + 0 coll) 1)
+(println)
+
+(println ";; apply")
+(simple-benchmark [coll (into [] (range 1000000))] (apply + coll) 1)
 (println)
 
 (println ";;; map / record ops")
@@ -107,6 +118,12 @@
                       m))
                   1)
 (simple-benchmark [coll cljs.core.PersistentHashMap/EMPTY] (assoc coll :f0 1) 1000000)
+(println)
+
+(println ";;; set ops")
+(simple-benchmark [] #{} 100000)
+(simple-benchmark [] #{1 2 3} 100000)
+(simple-benchmark [coll #{1 2 3}] (conj coll 4) 100000)
 (println)
 
 (println ";;; seq ops")

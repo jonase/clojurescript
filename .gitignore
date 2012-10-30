@@ -9,4 +9,6 @@ closure
 /coresimple.js
 /out
 .repl
-/target
+*.swp
+*.zip
+
